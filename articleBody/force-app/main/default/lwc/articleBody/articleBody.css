@@ -1,0 +1,20 @@
+.articleVoting .slds-card__body+.slds-card__body {
+    float: right;
+    margin-right: -14px;
+    margin-bottom: 0;
+    margin-top: -32px;
+}
+
+.articleAdditionalInfo > ul >  li {
+    display: inline-block;
+}
+
+.articleAdditionalInfo > ul > li:after {
+    content: "•";
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.articleAdditionalInfo > ul > li:last-child:after {
+    content: "";
+}

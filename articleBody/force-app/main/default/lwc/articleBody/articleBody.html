@@ -1,0 +1,47 @@
+<template>
+    <template if:true={articleInfo}>
+
+        <div if:true={showHeaderTemplate} class="slds-m-bottom_large articleAdditionalInfo">
+            <div if:true={showTitle} style={titleStyle}>{articleInfo.title}</div>
+            <ul if:true={showArticleAdditionalInfo}>
+                <li if:true={showArticleNumber} style={articleNumberStyle}>{articleNumberText} {articleInfo.articleNumber}</li>
+                <li if:true={showArticleViews} style={articleViewsStyle}>{articleViewsText} {articleInfo.articleViews}</li>
+            </ul>
+        </div>
+
+        <div><lightning-formatted-rich-text value={articleInfo.body}></lightning-formatted-rich-text></div>
+        
+        <template if:true={displayVoting}>
+            <article class="slds-card slds-m-top_large articleVoting">
+                <div class="slds-box--x-small">
+                    <div class="slds-card__body slds-m-left--xx-small slds-m-top--xx-small slds-m-bottom--xx-small">
+                        <div class="slds-media__body slds-truncate">Was this article helpful?</div>
+                    </div>
+                    <div class="slds-card__body slds-text-align--center">
+                        <div class="slds-clearfix slds-m-bottom--xx-small slds-m-right--large slds-m-left--x-small">
+                            <div id="upVoteButton" class="slds-float--left slds-m-right--x-small">
+                                <lightning-button-icon icon-name="utility:like" variant={upVoteVariant} size="medium" alternative-text="View More" onclick={handleUpVote}></lightning-button-icon>    
+                            </div>
+                            <div aria-live="assertive" id="upVoteCount" class="slds-float--left slds-m-right--medium slds-p-top--xx-small">
+                                <lightning-formatted-number value={articleInfo.likes}></lightning-formatted-number>
+                            </div>
+
+                            <div id="downVoteButton" class="slds-float--left slds-m-right--x-small">
+                                <lightning-button-icon icon-name="utility:dislike" variant={downVoteVariant} size="medium" alternative-text="View More" onclick={handleDownVote}></lightning-button-icon>    
+                            </div>
+                            <div aria-live="assertive" id="downVoteCount" class="slds-float--left slds-m-right--medium slds-p-top--xx-small">
+                                <lightning-formatted-number value={articleInfo.dislikes}></lightning-formatted-number>
+                            </div>
+                        </div>
+                        
+                    </div> 
+                </div>   
+            </article>
+        </template>
+
+    </template>
+
+    <template if:true={error}>
+        <div>{error}</div>
+    </template>
+</template>

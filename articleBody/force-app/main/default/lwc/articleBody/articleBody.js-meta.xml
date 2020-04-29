@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>48.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Article Body</masterLabel>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+           
+            <property name="articleAPIName" type="String" label="Article API Name" required="true" 
+            datasource="apex://articleAPINamePicklist"
+            description="Article (kav) API Name" />
+
+            <property name="articleBodyAPIName" type="String" label="Article Body (Rich Text) Field API Name" required="true"
+            datasource="apex://articleBodyAPINamePicklist"
+            description="Article Body (Rich Text Area / HTML type) Field on Article object" />
+
+            <property name="queryBy" type="String" label="Query By" required="true"
+            default="recordId" datasource="recordId,urlName,articleNumber"
+            description="Article Field to query / filter on" />
+
+            <property name="recordId" type="String" label="Record Id" required="false"
+            default="{!recordId}"
+            description="Record Id value if Query By recordId is selected" />
+
+            <property name="urlName" type="String" label="URL Name" required="false"
+            default="{!urlName}"
+            description="URL Name value if Query By urlName is selected" />
+
+            <property name="articleNumber" type="String" label="Article Number" required="false"
+            default=""
+            description="Article Number value if Query By articleNumber is selected" />
+
+            <property name="showTitle" type="Boolean" label="Show Title" required="false"
+            default="false"
+            description="If checked will display the article title." />
+
+            <property name="titleStyle" type="String" label="Title Style" required="false"
+            default=""
+            description="Style / CSS to apply to title" />
+
+            <property name="showArticleNumber" type="Boolean" label="Show Article Number" required="false"
+            default="false"
+            description="If checked will display article number." />
+
+            <property name="articleNumberStyle" type="String" label="Article Number Style" required="false"
+            default=""
+            description="Style / CSS to apply to article number." />
+
+            <property name="articleNumberText" type="String" label="Article Number Text" required="false"
+            default=""
+            description="Text Label for Article Number." />
+
+            <property name="showArticleViews" type="Boolean" label="Show Article Views" required="false"
+            default="false"
+            description="If checked will display article total views." />
+
+            <property name="articleViewsStyle" type="String" label="Article Views Style" required="false"
+            default=""
+            description="Style / CSS to apply to article views." />
+
+            <property name="articleViewsText" type="String" label="Article Views Text" required="false"
+            default=""
+            description="Text Label for Article Views." />
+
+            <property name="showVoting" type="Boolean" label="Show Voting" required="false"
+            default="false"
+            description="If checked will display article voting section." />
+
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
