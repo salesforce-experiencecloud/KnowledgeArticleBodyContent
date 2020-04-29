@@ -66,7 +66,7 @@ export default class ArticleBody extends LightningElement {
             }
             
         } else if (result.error) {
-            if(window.location.host.indexOf('sitepreview') > 0 || window.location.host.indexOf('livepreview') > 0)
+            if(window.location.host.indexOf('sitepreview') > 0 || window.location.host.indexOf('livepreview') > 0 || window.location.host.indexOf('live.') > 0)
             {
                 this.error = result.error.body.message;
                 this.error += ' Ensure that the article whitelist custom labels (articleBodyFieldAPINameWhitelist and articleAPINameWhitelist) are configured with the correct Article object API Name, and the Article Body field API Name.';
