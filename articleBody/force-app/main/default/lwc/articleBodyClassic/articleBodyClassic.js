@@ -1,17 +1,13 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import fetchArticleInfo from '@salesforce/apex/ArticleController.getArticleInfoLightning';
-import voteUp from '@salesforce/apex/ArticleController.voteUpLightning';
-import voteDown from '@salesforce/apex/ArticleController.voteDownLightning';
+import fetchArticleInfo from '@salesforce/apex/ArticleController.getArticleInfoClassic';
+import voteUp from '@salesforce/apex/ArticleController.voteUpClassic';
+import voteDown from '@salesforce/apex/ArticleController.voteDownClassic';
 import { refreshApex } from '@salesforce/apex';
 
 
 export default class ArticleBody extends LightningElement {
-    @api articleAPIName = '';
-    @api articleBodyAPIName = '';
-    @api queryBy = '';
+
     @api recordId = '';
-    @api urlName = '';
-    @api articleNumber = '';
     @api showTitle = false;
     @api titleStyle = '';
     @api showVoting = false;
@@ -47,7 +43,7 @@ export default class ArticleBody extends LightningElement {
 
     //wire functions
     wireArticleInfo;
-    @wire(fetchArticleInfo,{recordId: '$recordId', urlName: '$urlName', articleNumber: '$articleNumber', queryBy: '$queryBy', articleAPIName: '$articleAPIName', articleBodyAPIName: '$articleBodyAPIName'})
+    @wire(fetchArticleInfo,{recordId: '$recordId'})
     imperativeWiring(result) 
     {
         if (result.data) {
@@ -69,7 +65,7 @@ export default class ArticleBody extends LightningElement {
             if(window.location.host.indexOf('sitepreview') > 0 || window.location.host.indexOf('livepreview') > 0 || window.location.host.indexOf('live.') > 0)
             {
                 this.error = result.error.body.message;
-                this.error += (this.error.indexOf('Article Body Settings') > 0) ? ' \nEnsure that the default Article Body Settings custom metadata type is configured to whitelist the correct Article object API Name, and the Article Body field API Name.' : '';
+                this.error += (this.error.indexOf('Article Body Settings') > 0) ? ' \nEnsure that the default Article Body Settings custom metadata type is configured to whitelist the correct Article object API Name, and map the Article Body field API Name.' : '';
             }
             else 
             {
@@ -83,12 +79,7 @@ export default class ArticleBody extends LightningElement {
     {
         
         voteUp({
-            recordId: this.recordId,
-            urlName: this.urlName,
-            articleNumber: this.articleNumber,
-            queryBy: this.queryBy,
-            articleAPIName: this.articleAPIName, 
-            articleBodyAPIName: this.articleBodyAPIName
+            recordId: this.recordId
         })
         .then(() => {
             return refreshApex(this.wireArticleInfo);
@@ -105,12 +96,7 @@ export default class ArticleBody extends LightningElement {
     {
 
         voteDown({
-            recordId: this.recordId,
-            urlName: this.urlName,
-            articleNumber: this.articleNumber,
-            queryBy: this.queryBy,
-            articleAPIName: this.articleAPIName, 
-            articleBodyAPIName: this.articleBodyAPIName
+            recordId: this.recordId
         })
         .then(() => {
             return refreshApex(this.wireArticleInfo);

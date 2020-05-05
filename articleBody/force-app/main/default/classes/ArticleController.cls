@@ -1,7 +1,7 @@
 public with sharing class ArticleController {
     
     @AuraEnabled(cacheable=true)
-    public static String getArticleInfo(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
+    public static String getArticleInfoLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
     {
         
         Map<String,String> articleInfoMap = new Map<String,String>();
@@ -43,8 +43,44 @@ public with sharing class ArticleController {
 
     }
 
+    @AuraEnabled(cacheable=true)
+    public static String getArticleInfoClassic(Id recordId) 
+    {
+        
+        Map<String,String> articleInfoMap = new Map<String,String>();
+
+        String articleAPIName = recordId.getSObjectType().getDescribe().getName();
+        String articleBodyAPIName = getArticleBodyFieldAPINameClassic(articleAPIName);
+        SObject currArticle = getArticle(recordId, '', '', 'recordId', articleAPIName, articleBodyAPIName);
+
+        if(currArticle != null) 
+        {
+             
+            articleInfoMap.put('body', (System.Test.isRunningTest()) ? '' : String.valueOf(currArticle.get(articleBodyAPIName)));
+            articleInfoMap.put('title', String.valueOf(currArticle.get('Title')));
+            articleInfoMap.put('articleNumber', String.valueOf(currArticle.get('ArticleNumber')));
+            articleInfoMap.put('articleViews', String.valueOf(currArticle.get('ArticleTotalViewCount')));
+
+            articleInfoMap.put('isGuest', 'true');
+            
+            if(System.UserInfo.getUserType() != 'Guest')
+            {
+                articleInfoMap.put('isGuest', 'false');
+                Vote userVote = getUserVote(String.valueOf(currArticle.get('KnowledgeArticleId')));
+                articleInfoMap.put('userVote', (userVote != null) ? userVote.Type : '0');
+            }
+
+            articleInfoMap.put('likes', String.valueOf(getArticleLikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
+            articleInfoMap.put('dislikes', String.valueOf(getArticleDislikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
+            
+        }
+
+        return System.JSON.serialize(articleInfoMap);
+
+    }
+
     @AuraEnabled
-    public static String voteUp(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
+    public static String voteUpLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
     {
         
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
@@ -70,7 +106,27 @@ public with sharing class ArticleController {
     }
 
     @AuraEnabled
-    public static String voteDown(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
+    public static String voteUpClassic(Id recordId) 
+    {
+        
+        Map<String,String> articleVoteInfoMap = new Map<String,String>();
+
+        String articleAPIName = recordId.getSObjectType().getDescribe().getName();
+        String articleBodyAPIName = getArticleBodyFieldAPINameClassic(articleAPIName);
+        
+        try {
+
+            createVote(recordId, '', '', 'recordId', '5', articleAPIName, articleBodyAPIName);
+            articleVoteInfoMap.put('result','success');
+
+        } catch(Exception e) {System.debug(e);}
+
+        return System.JSON.serialize(articleVoteInfoMap);
+
+    }
+
+    @AuraEnabled
+    public static String voteDownLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
     {
 
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
@@ -91,6 +147,26 @@ public with sharing class ArticleController {
 
         } catch(Exception e) {System.debug(e);}
         
+        return System.JSON.serialize(articleVoteInfoMap);
+
+    }
+
+    @AuraEnabled
+    public static String voteDownClassic(Id recordId) 
+    {
+        
+        Map<String,String> articleVoteInfoMap = new Map<String,String>();
+
+        String articleAPIName = recordId.getSObjectType().getDescribe().getName();
+        String articleBodyAPIName = getArticleBodyFieldAPINameClassic(articleAPIName);
+        
+        try {
+
+            createVote(recordId, '', '', 'recordId', '1', articleAPIName, articleBodyAPIName);
+            articleVoteInfoMap.put('result','success');
+
+        } catch(Exception e) {System.debug(e);}
+
         return System.JSON.serialize(articleVoteInfoMap);
 
     }
@@ -191,9 +267,16 @@ public with sharing class ArticleController {
         return fields;
     }
 
+    private static String getArticleBodyFieldAPINameClassic(String articleAPIName)
+    {
+        String articleBodyAPIName = (System.Test.isRunningTest()) ? '' : getArticleBodySettings(articleAPIName).articleBody__Article_Body_Field_API_Name_Whitelist__c.split(',')[0];
+        return articleBodyAPIName;
+    }
+
     private static boolean validateArticleAPINames(String articleAPIName, String type)
     {
-        String whitelist = (type == 'field') ? System.Label.articleBody.articleBodyFieldAPINameWhitelist : System.Label.articleBody.articleAPINameWhitelist ;
+        articleBody__Article_Body_Setting__mdt abSetting = getArticleBodySettings();
+        String whitelist = (type == 'field') ? abSetting.articleBody__Article_Body_Field_API_Name_Whitelist__c : abSetting.articleBody__Article_API_Name_Whitelist__c;
         Set<String> whitelistSet = new Set<String>();
         for(String s : whitelist.split(','))
         {
@@ -207,13 +290,51 @@ public with sharing class ArticleController {
 
         if(!isValid && !System.Test.isRunningTest()) 
         {
-            throw new articleBodyException('Invalid ' + type + ' API name. Please add to whitelist custom label.');
+            String settingPrefix = Schema.getGlobalDescribe().get('articleBody__Article_Body_Setting__mdt').getDescribe().getKeyPrefix();
+            String errorText = 'Invalid ' + type + ' API name. Please add to Article Body Settings custom metadata type whitelist: ';
+            errorText += System.URL.getOrgDomainUrl().toExternalForm() + '/lightning/setup/CustomMetadata/page?address=%2F' + settingPrefix + '%3Fsetupid%3DCustomMetadata';
+            throw new articleBodyException(errorText);
         }
 
         isValid = (System.Test.isRunningTest()) ? true : isValid;
 
         return isValid;
 
+    }
+
+    private static articleBody__Article_Body_Setting__mdt getArticleBodySettings()
+    {
+        String CCDCSETTING_APINAME_DEFAULT = 'lightning';
+        return getArticleBodySettings(CCDCSETTING_APINAME_DEFAULT);
+
+    }
+
+    @TestVisible
+    private static articleBody__Article_Body_Setting__mdt getArticleBodySettings(String CCDCSETTING_APINAME_DEFAULT)
+    {
+        try {
+            SObjectType ccdcSettingType = Schema.getGlobalDescribe().get('articleBody__Article_Body_Setting__mdt');
+            Map<String,Schema.SObjectField> ccdcSettingFieldMap = ccdcSettingType.getDescribe().fields.getMap();
+            List<String> ccdcFieldList = new List<String>();
+            ccdcFieldList.addAll(ccdcSettingFieldMap.keySet());
+            String ccdcSettingFields = String.join(ccdcFieldList,',');
+
+            String query = 'SELECT ' + ccdcSettingFields + ' FROM articleBody__Article_Body_Setting__mdt WHERE ';
+            query += 'articleBody__Identifier__c = \'' + CCDCSETTING_APINAME_DEFAULT + '\' LIMIT 1';
+            List<articleBody__Article_Body_Setting__mdt> abSettingsList = System.database.query(query);
+            return abSettingsList[0];
+        } catch(Exception e) {
+            if((e+'').containsIgnoreCase('list index out of bounds')) 
+            {
+                String settingPrefix = Schema.getGlobalDescribe().get('articleBody__Article_Body_Setting__mdt').getDescribe().getKeyPrefix();
+                String errorText = 'Please add a record to Article Body Settings custom metadata type whitelist. ';
+                errorText += 'Set the identifier field and the Article API Name Whitelist field to the API name of the article type, ';
+                errorText += 'and the Article Body Field API Name Whitelist field to the API name of the Rich Text body/content field of the article type: ';
+                errorText += System.URL.getOrgDomainUrl().toExternalForm() + '/lightning/setup/CustomMetadata/page?address=%2F' + settingPrefix + '%3Fsetupid%3DCustomMetadata';
+                throw new articleBodyException(errorText);
+            }
+            return null;
+        }
     }
 
     public class articleBodyException extends Exception {}
