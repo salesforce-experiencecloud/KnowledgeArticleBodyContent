@@ -9,7 +9,7 @@
             </ul>
         </div>
 
-        <div><lightning-formatted-rich-text value={articleInfo.body}></lightning-formatted-rich-text></div>
+        <div><lightning-formatted-rich-text value={articleInfo.body} disable-linkify></lightning-formatted-rich-text></div>
         
         <template if:true={displayVoting}>
             <article class="slds-card slds-m-top_large articleVoting">
