@@ -32,10 +32,11 @@ public with sharing class ArticleController {
                 articleInfoMap.put('isGuest', 'false');
                 Vote userVote = getUserVote(String.valueOf(currArticle.get('KnowledgeArticleId')));
                 articleInfoMap.put('userVote', (userVote != null) ? userVote.Type : '0');
+                articleInfoMap.put('likes', String.valueOf(getArticleLikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
+                articleInfoMap.put('dislikes', String.valueOf(getArticleDislikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
             }
 
-            articleInfoMap.put('likes', String.valueOf(getArticleLikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
-            articleInfoMap.put('dislikes', String.valueOf(getArticleDislikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
+            
             
         }
 
@@ -68,10 +69,9 @@ public with sharing class ArticleController {
                 articleInfoMap.put('isGuest', 'false');
                 Vote userVote = getUserVote(String.valueOf(currArticle.get('KnowledgeArticleId')));
                 articleInfoMap.put('userVote', (userVote != null) ? userVote.Type : '0');
+                articleInfoMap.put('likes', String.valueOf(getArticleLikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
+                articleInfoMap.put('dislikes', String.valueOf(getArticleDislikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
             }
-
-            articleInfoMap.put('likes', String.valueOf(getArticleLikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
-            articleInfoMap.put('dislikes', String.valueOf(getArticleDislikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
             
         }
 
