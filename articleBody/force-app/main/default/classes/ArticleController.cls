@@ -1,7 +1,7 @@
-public with sharing class ArticleController {
+global with sharing class ArticleController {
     
     @AuraEnabled(cacheable=true)
-    public static String getArticleInfoLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
+    global static String getArticleInfoLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
     {
         
         Map<String,String> articleInfoMap = new Map<String,String>();
@@ -45,7 +45,7 @@ public with sharing class ArticleController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static String getArticleInfoClassic(Id recordId) 
+    global static String getArticleInfoClassic(Id recordId) 
     {
         
         Map<String,String> articleInfoMap = new Map<String,String>();
@@ -80,7 +80,7 @@ public with sharing class ArticleController {
     }
 
     @AuraEnabled
-    public static String voteUpLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
+    global static String voteUpLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
     {
         
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
@@ -106,7 +106,7 @@ public with sharing class ArticleController {
     }
 
     @AuraEnabled
-    public static String voteUpClassic(Id recordId) 
+    global static String voteUpClassic(Id recordId) 
     {
         
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
@@ -126,7 +126,7 @@ public with sharing class ArticleController {
     }
 
     @AuraEnabled
-    public static String voteDownLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
+    global static String voteDownLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
     {
 
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
@@ -152,7 +152,7 @@ public with sharing class ArticleController {
     }
 
     @AuraEnabled
-    public static String voteDownClassic(Id recordId) 
+    global static String voteDownClassic(Id recordId) 
     {
         
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
