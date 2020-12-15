@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Article_Body_Field_API_Name_Whitelist__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Knowledge Article object&apos;s Body / Content field API Name. Example: Body__c, namespace__Content__c</description>
+    <externalId>false</externalId>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Knowledge Article object&apos;s Body / Content field API Name. Example: Body__c, namespace__Content__c</inlineHelpText>
+    <label>Article Body Field API Name Whitelist</label>
+    <length>131072</length>
+    <type>LongTextArea</type>
+    <visibleLines>50</visibleLines>
+</CustomField>

@@ -2,16 +2,18 @@
 <CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
     <labels>
         <fullName>articleAPINameWhitelist</fullName>
+        <categories>ArticleBody, APINameOfArticleObjects</categories>
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>articleAPINameWhitelist</shortDescription>
-        <value>Article__kav</value>
+        <value>Article__kav, articleBody__Knowledge__kav</value>
     </labels>
     <labels>
         <fullName>articleBodyFieldAPINameWhitelist</fullName>
+        <categories>ArticleBody, APINameOfArticleObjectRichTextFieldsWithContent</categories>
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>articleBodyFieldAPINameWhitelist</shortDescription>
-        <value>Body__c</value>
+        <value>Body__c, articleBody__Content__c</value>
     </labels>
 </CustomLabels>

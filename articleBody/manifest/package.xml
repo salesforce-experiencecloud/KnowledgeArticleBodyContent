@@ -36,5 +36,13 @@
         <members>*</members>
         <name>CustomLabel</name>
     </types>
+    <types>
+        <members>*</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomMetadata</name>
+    </types>
     <version>48.0</version>
 </Package>

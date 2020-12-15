@@ -38,4 +38,3 @@ global class articleAPINamePicklist extends VisualEditor.DynamicPickList{
     }
         
 }
-    

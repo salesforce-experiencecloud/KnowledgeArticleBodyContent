@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>lightning</label>
+    <protected>false</protected>
+    <values>
+        <field>Article_API_Name_Whitelist__c</field>
+        <value xsi:type="xsd:string">articleBody__Knowledge__kav</value>
+    </values>
+    <values>
+        <field>Article_Body_Field_API_Name_Whitelist__c</field>
+        <value xsi:type="xsd:string">articleBody__Content__c</value>
+    </values>
+    <values>
+        <field>Identifier__c</field>
+        <value xsi:type="xsd:string">lightning</value>
+    </values>
+</CustomMetadata>
