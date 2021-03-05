@@ -6,6 +6,9 @@
     <description>
         Use this component with Classic Knowledge on article detail pages or any other page where you want to display the content / body of an article from a Rich Text field on the article.
     </description>
+    <capabilities>
+        <capability>lightningCommunity__RelaxedCSP</capability>
+    </capabilities>
     <targets>
         <target>lightningCommunity__Page</target>
         <target>lightningCommunity__Default</target>
