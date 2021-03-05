@@ -8,6 +8,7 @@ import { refreshApex } from '@salesforce/apex';
 export default class ArticleBody extends LightningElement {
     @api articleAPIName = '';
     @api articleBodyAPIName = '';
+    @api articleBodyAPIName2 = '';
     @api queryBy = '';
     @api recordId = '';
     @api urlName = '';
@@ -21,6 +22,8 @@ export default class ArticleBody extends LightningElement {
     @api showArticleViews = false;
     @api articleViewsStyle = '';
     @api articleViewsText = '';
+    @api showSecondBodyField = false;
+    @api showTopics = false;
 
     @track articleInfo;
     @track error;
@@ -47,7 +50,7 @@ export default class ArticleBody extends LightningElement {
 
     //wire functions
     wireArticleInfo;
-    @wire(fetchArticleInfo,{recordId: '$recordId', urlName: '$urlName', articleNumber: '$articleNumber', queryBy: '$queryBy', articleAPIName: '$articleAPIName', articleBodyAPIName: '$articleBodyAPIName'})
+    @wire(fetchArticleInfo,{recordId: '$recordId', urlName: '$urlName', articleNumber: '$articleNumber', queryBy: '$queryBy', articleAPIName: '$articleAPIName', articleBodyAPIName: '$articleBodyAPIName', articleBodyAPIName2: '$articleBodyAPIName2'})
     imperativeWiring(result) 
     {
         if (result.data) {
@@ -63,6 +66,15 @@ export default class ArticleBody extends LightningElement {
             else if(this.articleInfo.userVote === '1')
             {
                 this.downVoteVariant = 'brand';
+            }
+
+            if(this.articleInfo.topicAssignments !== undefined && this.articleInfo.topicAssignments !== null 
+                && this.articleInfo.topicAssignments.length > 0)
+            {
+                for(let i=0; i < this.articleInfo.topicAssignments.length;i++)
+                {
+                    this.articleInfo.topicAssignments[i].link = this.articleInfo.siteUrl + '/' + this.articleInfo.topicAssignments[i].TopicId;
+                }
             }
             
         } else if (result.error) {
@@ -88,7 +100,8 @@ export default class ArticleBody extends LightningElement {
             articleNumber: this.articleNumber,
             queryBy: this.queryBy,
             articleAPIName: this.articleAPIName, 
-            articleBodyAPIName: this.articleBodyAPIName
+            articleBodyAPIName: this.articleBodyAPIName,
+            articleBodyAPIName2: this.articleBodyAPIName2
         })
         .then(() => {
             return refreshApex(this.wireArticleInfo);
@@ -110,7 +123,8 @@ export default class ArticleBody extends LightningElement {
             articleNumber: this.articleNumber,
             queryBy: this.queryBy,
             articleAPIName: this.articleAPIName, 
-            articleBodyAPIName: this.articleBodyAPIName
+            articleBodyAPIName: this.articleBodyAPIName,
+            articleBodyAPIName2: this.articleBodyAPIName2
         })
         .then(() => {
             return refreshApex(this.wireArticleInfo);

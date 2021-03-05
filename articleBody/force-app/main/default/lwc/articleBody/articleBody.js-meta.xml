@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>48.0</apiVersion>
+    <apiVersion>50.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>Article Body - Lightning</masterLabel>
     <description>
@@ -20,6 +20,14 @@
             <property name="articleBodyAPIName" type="String" label="Article Body (Rich Text) Field API Name" required="true"
             datasource="apex://articleBodyAPINamePicklist"
             description="Article Body (Rich Text Area / HTML type) Field on Article object" />
+
+            <property name="articleBodyAPIName2" type="String" label="Article Body (Rich Text) Field API Name 2" required="false"
+            datasource="apex://articleBodyAPINamePicklist"
+            description="Article Body (Rich Text Area / HTML type) Field on Article object 2" />
+
+            <property name="showSecondBodyField" type="Boolean" label="Display Second Body Field" required="false"
+            default="false"
+            description="If checked will display the article's second body field." />
 
             <property name="queryBy" type="String" label="Query By" required="true"
             default="recordId" datasource="recordId,urlName,articleNumber"
@@ -68,6 +76,10 @@
             <property name="articleViewsText" type="String" label="Article Views Text" required="false"
             default=""
             description="Text Label for Article Views." />
+
+            <property name="showTopics" type="Boolean" label="Show Topics" required="false"
+            default="false"
+            description="If checked will display article topics section." />
 
             <property name="showVoting" type="Boolean" label="Show Voting" required="false"
             default="false"

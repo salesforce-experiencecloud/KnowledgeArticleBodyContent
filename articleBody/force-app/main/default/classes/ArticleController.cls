@@ -1,26 +1,42 @@
 global with sharing class ArticleController {
     
     @AuraEnabled(cacheable=true)
-    global static String getArticleInfoLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
+    global static String getArticleInfoLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName)
     {
-        
-        Map<String,String> articleInfoMap = new Map<String,String>();
+        return getArticleInfoLightning(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPIName, null);
+    }
+
+    @AuraEnabled(cacheable=true)
+    global static String getArticleInfoLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName, String articleBodyAPIName2) 
+    {
+        Set<String> articleBodyAPINameSet = new Set<String>();
+        articleBodyAPINameSet.add(articleBodyAPIName);
+        if(articleBodyAPIName2 != null && articleBodyAPIName2.trim() != '') 
+        {
+            articleBodyAPINameSet.add(articleBodyAPIName2);
+        }
+        Map<String,Object> articleInfoMap = new Map<String,Object>();
 
         Boolean isArticleNameValid = validateArticleAPINames(articleAPIName, 'article');
 
         Boolean isArticleFieldNameValid = validateArticleAPINames(articleBodyAPIName, 'field');
 
-        if(!isArticleNameValid || !isArticleFieldNameValid) 
+        Boolean isArticleFieldNameValid2 = (articleBodyAPIName2 != null && articleBodyAPIName2.trim() != '') ? validateArticleAPINames(articleBodyAPIName2, 'field') : true;
+
+        if(!isArticleNameValid || !isArticleFieldNameValid || !isArticleFieldNameValid2) 
         {
             return System.JSON.serialize(articleInfoMap);
         }
 
-        SObject currArticle = getArticle(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPIName);
+        SObject currArticle = getArticle(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPINameSet);
+        
+        articleInfoMap.put('siteUrl', System.Site.getBaseUrl());
 
         if(currArticle != null) 
         {
              
             articleInfoMap.put('body', (System.Test.isRunningTest()) ? '' : String.valueOf(currArticle.get(articleBodyAPIName)));
+            articleInfoMap.put('body2', (System.Test.isRunningTest() || articleBodyAPIName2 == null || articleBodyAPIName2.trim() == '') ? '' : String.valueOf(currArticle.get(articleBodyAPIName2)));
             articleInfoMap.put('title', String.valueOf(currArticle.get('Title')));
             articleInfoMap.put('articleNumber', String.valueOf(currArticle.get('ArticleNumber')));
             articleInfoMap.put('articleViews', String.valueOf(currArticle.get('ArticleTotalViewCount')));
@@ -36,7 +52,11 @@ global with sharing class ArticleController {
                 articleInfoMap.put('dislikes', String.valueOf(getArticleDislikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
             }
 
-            
+            List<TopicAssignment> topicAssignments = getTopicAssignments(currArticle.Id);
+            if(topicAssignments!= null && topicAssignments.size() > 0)
+            {
+                articleInfoMap.put('topicAssignments', topicAssignments);
+            }        
             
         }
 
@@ -48,16 +68,19 @@ global with sharing class ArticleController {
     global static String getArticleInfoClassic(Id recordId) 
     {
         
-        Map<String,String> articleInfoMap = new Map<String,String>();
+        Map<String,Object> articleInfoMap = new Map<String,Object>();
 
         String articleAPIName = recordId.getSObjectType().getDescribe().getName();
-        String articleBodyAPIName = getArticleBodyFieldAPINameClassic(articleAPIName);
-        SObject currArticle = getArticle(recordId, '', '', 'recordId', articleAPIName, articleBodyAPIName);
+        Set<String> articleBodyAPINameSet = getArticleBodyFieldAPINameClassic(articleAPIName);
+        List<String> articleBodyAPINameList = new List<String>(articleBodyAPINameSet);
+        SObject currArticle = getArticle(recordId, '', '', 'recordId', articleAPIName, articleBodyAPINameSet);
+        articleInfoMap.put('siteUrl', System.Site.getBaseUrl());
 
         if(currArticle != null) 
         {
              
-            articleInfoMap.put('body', (System.Test.isRunningTest()) ? '' : String.valueOf(currArticle.get(articleBodyAPIName)));
+            articleInfoMap.put('body', (System.Test.isRunningTest()) ? '' : String.valueOf(currArticle.get(articleBodyAPINameList[0])));
+            articleInfoMap.put('body2', (System.Test.isRunningTest() || articleBodyAPINameSet.size() < 2) ? '' : String.valueOf(currArticle.get(articleBodyAPINameList[1])));
             articleInfoMap.put('title', String.valueOf(currArticle.get('Title')));
             articleInfoMap.put('articleNumber', String.valueOf(currArticle.get('ArticleNumber')));
             articleInfoMap.put('articleViews', String.valueOf(currArticle.get('ArticleTotalViewCount')));
@@ -72,6 +95,12 @@ global with sharing class ArticleController {
                 articleInfoMap.put('likes', String.valueOf(getArticleLikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
                 articleInfoMap.put('dislikes', String.valueOf(getArticleDislikes(String.valueOf(currArticle.get('KnowledgeArticleId')))));
             }
+
+            List<TopicAssignment> topicAssignments = getTopicAssignments(currArticle.Id);
+            if(topicAssignments!= null && topicAssignments.size() > 0)
+            {
+                articleInfoMap.put('topicAssignments', topicAssignments);
+            }    
             
         }
 
@@ -82,21 +111,34 @@ global with sharing class ArticleController {
     @AuraEnabled
     global static String voteUpLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
     {
-        
+        return voteUpLightning(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPIName, null);
+    }
+
+    @AuraEnabled
+    global static String voteUpLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName, String articleBodyAPIName2) 
+    {
+        Set<String> articleBodyAPINameSet = new Set<String>();
+        articleBodyAPINameSet.add(articleBodyAPIName);
+        if(articleBodyAPIName2 != null) 
+        {
+            articleBodyAPINameSet.add(articleBodyAPIName2);
+        }
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
 
         Boolean isArticleNameValid = validateArticleAPINames(articleAPIName, 'article');
 
         Boolean isArticleFieldNameValid = validateArticleAPINames(articleBodyAPIName, 'field');
 
-        if(!isArticleNameValid || !isArticleFieldNameValid) 
+        Boolean isArticleFieldNameValid2 = (articleBodyAPIName2 != null && articleBodyAPIName2.trim() != '') ? validateArticleAPINames(articleBodyAPIName2, 'field') : true;
+
+        if(!isArticleNameValid || !isArticleFieldNameValid || !isArticleFieldNameValid2) 
         {
             return System.JSON.serialize(articleVoteInfoMap);
         }
         
         try {
 
-            createVote(recordId, urlName, articleNumber, queryBy, '5', articleAPIName, articleBodyAPIName);
+            createVote(recordId, urlName, articleNumber, queryBy, '5', articleAPIName, articleBodyAPINameSet);
             articleVoteInfoMap.put('result','success');
 
         } catch(Exception e) {System.debug(e);}
@@ -112,11 +154,11 @@ global with sharing class ArticleController {
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
 
         String articleAPIName = recordId.getSObjectType().getDescribe().getName();
-        String articleBodyAPIName = getArticleBodyFieldAPINameClassic(articleAPIName);
+        Set<String> articleBodyAPINameSet = getArticleBodyFieldAPINameClassic(articleAPIName);
         
         try {
 
-            createVote(recordId, '', '', 'recordId', '5', articleAPIName, articleBodyAPIName);
+            createVote(recordId, '', '', 'recordId', '5', articleAPIName, articleBodyAPINameSet);
             articleVoteInfoMap.put('result','success');
 
         } catch(Exception e) {System.debug(e);}
@@ -128,21 +170,34 @@ global with sharing class ArticleController {
     @AuraEnabled
     global static String voteDownLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
     {
+        return voteDownLightning(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPIName, null);
+    }
 
+    @AuraEnabled
+    global static String voteDownLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName, String articleBodyAPIName2) 
+    {
+        Set<String> articleBodyAPINameSet = new Set<String>();
+        articleBodyAPINameSet.add(articleBodyAPIName);
+        if(articleBodyAPIName2 != null) 
+        {
+            articleBodyAPINameSet.add(articleBodyAPIName2);
+        }
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
 
         Boolean isArticleNameValid = validateArticleAPINames(articleAPIName, 'article');
 
         Boolean isArticleFieldNameValid = validateArticleAPINames(articleBodyAPIName, 'field');
 
-        if(!isArticleNameValid || !isArticleFieldNameValid) 
+        Boolean isArticleFieldNameValid2 = (articleBodyAPIName2 != null && articleBodyAPIName2.trim() != '') ? validateArticleAPINames(articleBodyAPIName2, 'field') : true;
+
+        if(!isArticleNameValid || !isArticleFieldNameValid || !isArticleFieldNameValid2) 
         {
             return System.JSON.serialize(articleVoteInfoMap);
         }
         
         try {
 
-            createVote(recordId, urlName, articleNumber, queryBy, '1', articleAPIName, articleBodyAPIName);
+            createVote(recordId, urlName, articleNumber, queryBy, '1', articleAPIName, articleBodyAPINameSet);
             articleVoteInfoMap.put('result','success');
 
         } catch(Exception e) {System.debug(e);}
@@ -158,11 +213,11 @@ global with sharing class ArticleController {
         Map<String,String> articleVoteInfoMap = new Map<String,String>();
 
         String articleAPIName = recordId.getSObjectType().getDescribe().getName();
-        String articleBodyAPIName = getArticleBodyFieldAPINameClassic(articleAPIName);
+        Set<String> articleBodyAPINameSet = getArticleBodyFieldAPINameClassic(articleAPIName);
         
         try {
 
-            createVote(recordId, '', '', 'recordId', '1', articleAPIName, articleBodyAPIName);
+            createVote(recordId, '', '', 'recordId', '1', articleAPIName, articleBodyAPINameSet);
             articleVoteInfoMap.put('result','success');
 
         } catch(Exception e) {System.debug(e);}
@@ -171,10 +226,18 @@ global with sharing class ArticleController {
 
     }
 
-    private static void createVote(String recordId, String urlName, String articleNumber, String queryBy, String voteNumber, String articleAPIName, String articleBodyAPIName)
+    private static List<TopicAssignment> getTopicAssignments(Id recordId)
+    {
+        String query = 'SELECT Id, TopicId, Topic.Name FROM TopicAssignment WHERE EntityId = \'' + recordId + '\'';
+        query += (System.Test.isRunningTest()) ? '' : ' AND NetworkId = \'' + System.Network.getNetworkId() + '\'';
+        query += ' LIMIT 50';
+        return System.Database.query(query);
+    }
+
+    private static void createVote(String recordId, String urlName, String articleNumber, String queryBy, String voteNumber, String articleAPIName, Set<String> articleBodyAPINameSet)
     {
 
-        SObject currArticle = getArticle(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPIName);
+        SObject currArticle = getArticle(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPINameSet);
 
         if(currArticle != null)
         {
@@ -210,12 +273,12 @@ global with sharing class ArticleController {
         return [SELECT COUNT() FROM Vote WHERE ParentId = :recordId AND Type = '1'];
     }
 
-    private static SObject getArticle(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName) 
+    private static SObject getArticle(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, Set<String> articleBodyAPINameSet) 
     {
 
         Map<String,String> articleInfoMap = new Map<String,String>();
 
-        String fields = getArticleFields(articleBodyAPIName);
+        String fields = getArticleFields(articleBodyAPINameSet);
         String calcArticleAPIName = getArticleAPIName(articleAPIName);
 
         String query = 'SELECT ' + fields + ' FROM ' + calcArticleAPIName + ' WHERE ';
@@ -260,17 +323,26 @@ global with sharing class ArticleController {
         return calcArticleAPIName;
     }
 
-    private static String getArticleFields(String articleBodyAPIName)
+    private static String getArticleFields(Set<String> articleBodyAPINameSet)
     {
         String fields = 'Title, KnowledgeArticleId, ArticleTotalViewCount, ArticleNumber';
-        fields += (System.Test.isRunningTest()) ? '' : ',' + articleBodyAPIName;
+        if(System.Test.isRunningTest()){return fields;}
+        for(String s : articleBodyAPINameSet)
+        {
+            fields +=  ',' + s.trim();
+        }
         return fields;
     }
 
-    private static String getArticleBodyFieldAPINameClassic(String articleAPIName)
+    private static Set<String> getArticleBodyFieldAPINameClassic(String articleAPIName)
     {
-        String articleBodyAPIName = (System.Test.isRunningTest()) ? '' : getArticleBodySettings(articleAPIName).articleBody__Article_Body_Field_API_Name_Whitelist__c.split(',')[0];
-        return articleBodyAPIName;
+        Set<String> articleBodyFieldAPINameSet = new Set<String>();
+        if(System.Test.isRunningTest()) {return articleBodyFieldAPINameSet;}
+        for(String s : getArticleBodySettings(articleAPIName).articleBody__Article_Body_Field_API_Name_Whitelist__c.split(','))
+        {
+            articleBodyFieldAPINameSet.add(s.trim());
+        }
+        return articleBodyFieldAPINameSet;
     }
 
     private static boolean validateArticleAPINames(String articleAPIName, String type)

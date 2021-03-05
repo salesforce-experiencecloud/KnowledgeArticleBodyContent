@@ -17,6 +17,8 @@ export default class ArticleBody extends LightningElement {
     @api showArticleViews = false;
     @api articleViewsStyle = '';
     @api articleViewsText = '';
+    @api showSecondBodyField = false;
+    @api showTopics = false;
 
     @track articleInfo;
     @track error;
@@ -59,6 +61,15 @@ export default class ArticleBody extends LightningElement {
             else if(this.articleInfo.userVote === '1')
             {
                 this.downVoteVariant = 'brand';
+            }
+
+            if(this.articleInfo.topicAssignments !== undefined && this.articleInfo.topicAssignments !== null 
+                && this.articleInfo.topicAssignments.length > 0)
+            {
+                for(let i=0; i < this.articleInfo.topicAssignments.length;i++)
+                {
+                    this.articleInfo.topicAssignments[i].link = this.articleInfo.siteUrl + '/' + this.articleInfo.topicAssignments[i].TopicId;
+                }
             }
             
         } else if (result.error) {

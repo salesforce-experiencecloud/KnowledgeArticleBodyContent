@@ -23,3 +23,26 @@
 .articleAdditionalInfo > h1 {
     font-size: 1.5rem;
 }
+
+.selfServiceArticleTopicList.slds-pill_container--bare {
+    display: inline-block;
+    padding: var(--lwc-spacingXSmall,0.5rem) var(--lwc-spacingLarge,1.5rem);
+    padding-left: 0;
+}
+
+.selfServiceArticleLayout {
+    font-size: var(--lwc-ssFontSizeSmall,0.75rem);
+    line-height: var(--lwc-ssLineHeightHeading,1.5em);
+    box-sizing: border-box;
+}
+
+.selfServiceArticleTopicList .slds-pill {
+    padding: var(--lwc-spacingXxSmall,0.25rem) var(--lwc-spacingLarge,1.5rem);
+    border-radius: var(--lwc-borderRadiusPill,15rem);
+    margin-right: var(--lwc-spacingXSmall,0.5rem);
+    margin-bottom: var(--lwc-spacingXSmall,0.5rem);
+}
+
+.selfServiceArticleTopicList .slds-pill .forceTopicTopicLink {
+    max-width: 200px;
+}

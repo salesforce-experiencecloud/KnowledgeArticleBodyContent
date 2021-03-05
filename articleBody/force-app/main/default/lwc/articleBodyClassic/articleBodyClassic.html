@@ -9,8 +9,31 @@
             </ul>
         </div>
 
-        <div><lightning-formatted-rich-text value={articleInfo.body}></lightning-formatted-rich-text></div>
-        
+        <div if:true={articleInfo.body}><lightning-formatted-rich-text value={articleInfo.body} disable-linkify></lightning-formatted-rich-text></div>
+        <template if:true={showSecondBodyField}>
+            <div if:true={articleInfo.body2} class="slds-m-top_medium">
+                <lightning-formatted-rich-text value={articleInfo.body2} disable-linkify></lightning-formatted-rich-text>
+            </div>
+        </template>
+
+        <template if:true={showTopics}>
+            <template if:true={articleInfo.topicAssignments}>
+                <div class="slds-pill_container--bare selfServiceArticleTopicList selfServiceArticleLayout slds-m-top_large">
+                    <template for:each={articleInfo.topicAssignments} for:item="topicAssignment">
+                        <span key={topicAssignment.Id} class="slds-pill">
+                            <a class="slds-pill__label forceTopicTopicLink" href={topicAssignment.link}>
+                                <span class="slds-grid slds-wrap">
+                                    <span class="slds-col slds-truncate">
+                                        <span class="uiOutputText">{topicAssignment.Topic.Name}</span>
+                                    </span>
+                                </span>
+                            </a>
+                        </span>
+                    </template>
+                </div>
+            </template>
+        </template>
+
         <template if:true={displayVoting}>
             <article class="slds-card slds-m-top_large articleVoting">
                 <div class="slds-box--x-small">
