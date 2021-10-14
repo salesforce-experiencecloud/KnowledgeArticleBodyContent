@@ -7,7 +7,14 @@ global with sharing class ArticleController {
     }
 
     @AuraEnabled(cacheable=true)
-    global static String getArticleInfoLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName, String articleBodyAPIName2) 
+    global static String getArticleInfoLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName, String articleBodyAPIName2)
+    {
+        return getArticleInfoLightning(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPIName, articleBodyAPIName2, false);
+    } 
+
+
+    @AuraEnabled(cacheable=true)
+    global static String getArticleInfoLightning(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, String articleBodyAPIName, String articleBodyAPIName2, Boolean initial) 
     {
         Set<String> articleBodyAPINameSet = new Set<String>();
         articleBodyAPINameSet.add(articleBodyAPIName);
@@ -28,7 +35,7 @@ global with sharing class ArticleController {
             return System.JSON.serialize(articleInfoMap);
         }
 
-        SObject currArticle = getArticle(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPINameSet);
+        SObject currArticle = getArticle(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPINameSet, initial);
         
         articleInfoMap.put('siteUrl', System.Site.getBaseUrl());
 
@@ -67,13 +74,19 @@ global with sharing class ArticleController {
     @AuraEnabled(cacheable=true)
     global static String getArticleInfoClassic(Id recordId) 
     {
+        return getArticleInfoClassic(recordId, false);
+    }
+
+    @AuraEnabled(cacheable=true)
+    global static String getArticleInfoClassic(Id recordId, Boolean initial) 
+    {
         
         Map<String,Object> articleInfoMap = new Map<String,Object>();
 
         String articleAPIName = recordId.getSObjectType().getDescribe().getName();
         Set<String> articleBodyAPINameSet = getArticleBodyFieldAPINameClassic(articleAPIName);
         List<String> articleBodyAPINameList = new List<String>(articleBodyAPINameSet);
-        SObject currArticle = getArticle(recordId, '', '', 'recordId', articleAPIName, articleBodyAPINameSet);
+        SObject currArticle = getArticle(recordId, '', '', 'recordId', articleAPIName, articleBodyAPINameSet, initial);
         articleInfoMap.put('siteUrl', System.Site.getBaseUrl());
 
         if(currArticle != null) 
@@ -237,7 +250,7 @@ global with sharing class ArticleController {
     private static void createVote(String recordId, String urlName, String articleNumber, String queryBy, String voteNumber, String articleAPIName, Set<String> articleBodyAPINameSet)
     {
 
-        SObject currArticle = getArticle(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPINameSet);
+        SObject currArticle = getArticle(recordId, urlName, articleNumber, queryBy, articleAPIName, articleBodyAPINameSet, false);
 
         if(currArticle != null)
         {
@@ -273,7 +286,7 @@ global with sharing class ArticleController {
         return [SELECT COUNT() FROM Vote WHERE ParentId = :recordId AND Type = '1'];
     }
 
-    private static SObject getArticle(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, Set<String> articleBodyAPINameSet) 
+    private static SObject getArticle(String recordId, String urlName, String articleNumber, String queryBy, String articleAPIName, Set<String> articleBodyAPINameSet, Boolean updateViewStat) 
     {
 
         Map<String,String> articleInfoMap = new Map<String,String>();
@@ -302,7 +315,7 @@ global with sharing class ArticleController {
 
         if(query != null) 
         {
-            
+            query += (updateViewStat) ? ' UPDATE VIEWSTAT' : '';   
             List<SObject> articleList = System.Database.query(query);
 
             if(articleList != null && articleList.size() > 0) 

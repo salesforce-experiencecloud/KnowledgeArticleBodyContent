@@ -29,6 +29,7 @@ export default class ArticleBody extends LightningElement {
     @track error;
     @track upVoteVariant = '';
     @track downVoteVariant = '';
+    @track initial = true;
 
     @api
     get displayVoting()
@@ -50,7 +51,7 @@ export default class ArticleBody extends LightningElement {
 
     //wire functions
     wireArticleInfo;
-    @wire(fetchArticleInfo,{recordId: '$recordId', urlName: '$urlName', articleNumber: '$articleNumber', queryBy: '$queryBy', articleAPIName: '$articleAPIName', articleBodyAPIName: '$articleBodyAPIName', articleBodyAPIName2: '$articleBodyAPIName2'})
+    @wire(fetchArticleInfo,{recordId: '$recordId', urlName: '$urlName', articleNumber: '$articleNumber', queryBy: '$queryBy', articleAPIName: '$articleAPIName', articleBodyAPIName: '$articleBodyAPIName', articleBodyAPIName2: '$articleBodyAPIName2', initial: '$initial'})
     imperativeWiring(result) 
     {
         if (result.data) {
@@ -76,6 +77,8 @@ export default class ArticleBody extends LightningElement {
                     this.articleInfo.topicAssignments[i].link = this.articleInfo.siteUrl + '/' + this.articleInfo.topicAssignments[i].TopicId;
                 }
             }
+
+            this.initial = false;
             
         } else if (result.error) {
             if(window.location.host.indexOf('sitepreview') > 0 || window.location.host.indexOf('livepreview') > 0 || window.location.host.indexOf('live.') > 0)
