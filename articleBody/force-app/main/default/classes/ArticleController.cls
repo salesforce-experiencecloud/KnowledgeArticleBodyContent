@@ -66,6 +66,10 @@ global with sharing class ArticleController {
             }        
             
         }
+        else 
+        {
+            return null;
+        }
 
         return System.JSON.serialize(articleInfoMap);
 
@@ -115,6 +119,10 @@ global with sharing class ArticleController {
                 articleInfoMap.put('topicAssignments', topicAssignments);
             }    
             
+        }
+        else 
+        {
+            return null;
         }
 
         return System.JSON.serialize(articleInfoMap);
@@ -315,6 +323,12 @@ global with sharing class ArticleController {
 
         if(query != null) 
         {
+
+            if(!isAdmin())
+            {
+                query += ' AND PublishStatus = \'Online\'';
+            }
+
             query += (updateViewStat) ? ' UPDATE VIEWSTAT' : '';   
             List<SObject> articleList = System.Database.query(query);
 
@@ -392,6 +406,11 @@ global with sharing class ArticleController {
         String CCDCSETTING_APINAME_DEFAULT = 'lightning';
         return getArticleBodySettings(CCDCSETTING_APINAME_DEFAULT);
 
+    }
+
+    private static Boolean isAdmin()
+    {
+        return [SELECT Id FROM Profile WHERE Id = :System.UserInfo.getProfileId() AND (Name = 'System Administrator' OR PermissionsModifyAllData = TRUE)].size() > 0;
     }
 
     @TestVisible
