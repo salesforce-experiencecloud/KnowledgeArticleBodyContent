@@ -140,7 +140,7 @@ global with sharing class ArticleController {
     {
         Set<String> articleBodyAPINameSet = new Set<String>();
         articleBodyAPINameSet.add(articleBodyAPIName);
-        if(articleBodyAPIName2 != null) 
+        if(articleBodyAPIName2 != null && articleBodyAPIName2.trim() != '') 
         {
             articleBodyAPINameSet.add(articleBodyAPIName2);
         }
@@ -199,7 +199,7 @@ global with sharing class ArticleController {
     {
         Set<String> articleBodyAPINameSet = new Set<String>();
         articleBodyAPINameSet.add(articleBodyAPIName);
-        if(articleBodyAPIName2 != null) 
+        if(articleBodyAPIName2 != null && articleBodyAPIName2.trim() != '') 
         {
             articleBodyAPINameSet.add(articleBodyAPIName2);
         }
@@ -330,6 +330,7 @@ global with sharing class ArticleController {
             }
 
             query += (updateViewStat) ? ' UPDATE VIEWSTAT' : '';   
+            system.debug('Query: ' + query);
             List<SObject> articleList = System.Database.query(query);
 
             if(articleList != null && articleList.size() > 0) 
@@ -356,7 +357,10 @@ global with sharing class ArticleController {
         if(System.Test.isRunningTest()){return fields;}
         for(String s : articleBodyAPINameSet)
         {
-            fields +=  ',' + s.trim();
+            if(s.trim() != '')
+            {
+                fields +=  ',' + s.trim();
+            }
         }
         return fields;
     }

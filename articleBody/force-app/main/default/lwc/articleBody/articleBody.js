@@ -24,6 +24,9 @@ export default class ArticleBody extends LightningElement {
     @api articleViewsText = '';
     @api showSecondBodyField = false;
     @api showTopics = false;
+    @api replaceSmartLinks = false;
+    @api smartLinksUrlPath = '';
+    @api articlePageUrl = 'article';
 
     @track articleInfo;
     @track error;
@@ -76,6 +79,13 @@ export default class ArticleBody extends LightningElement {
                 {
                     this.articleInfo.topicAssignments[i].link = this.articleInfo.siteUrl + '/' + this.articleInfo.topicAssignments[i].TopicId;
                 }
+            }
+
+            if(this.replaceSmartLinks && this.smartLinksUrlPath !== undefined && this.smartLinksUrlPath !== null && this.smartLinksUrlPath.trim() !== ''
+            && this.articlePageUrl !== undefined && this.articlePageUrl !== null && this.articlePageUrl.trim() !== '' && this.articleInfo !== undefined && this.articleInfo !== null
+            && this.articleInfo.body !== undefined && this.articleInfo.body !== null)
+            {
+                this.doReplaceSmartLinks();
             }
 
             this.initial = false;
@@ -138,6 +148,21 @@ export default class ArticleBody extends LightningElement {
         });
         return refreshApex(this.wireArticleInfo);
 
+    }
+
+    doReplaceSmartLinks()
+    {
+        let calculatedArticlePageUrl = '/s/' + this.articlePageUrl + '/';
+        try {
+            this.articleInfo.body = this.articleInfo.body.replaceAll(this.smartLinksUrlPath, calculatedArticlePageUrl);
+        }catch(err){}
+
+        if(this.articleInfo.body2 !== undefined && this.articleInfo.body2 !== null && this.articleInfo.body2.trim() !== '')
+        {
+            try {
+                this.articleInfo.body2 = this.articleInfo.body2.replaceAll(this.smartLinksUrlPath, calculatedArticlePageUrl);
+            }catch(err){}
+        }
     }
 
 }

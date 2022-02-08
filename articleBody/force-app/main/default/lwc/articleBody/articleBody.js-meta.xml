@@ -88,6 +88,18 @@
             default="false"
             description="If checked will display article voting section." />
 
+            <property name="replaceSmartLinks" type="Boolean" label="Replace Smart Links" required="false"
+            default="false"
+            description="If checked attempt to replace smart links." />
+
+            <property name="smartLinksUrlPath" type="String" label="Smart Links Url Path" required="false"
+            default=""
+            description="Url Path for Smart Links. Example: /articles/Knowledge/ (include '/' at start and end)" />
+
+            <property name="articlePageUrl" type="String" label="Article Page Url" required="false"
+            default="article"
+            description="Article Page Url in your site. Example: if your article page is /article/some-article-name then the page url is 'article'" />
+
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
