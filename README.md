@@ -19,6 +19,8 @@ Manish Aggarwal
 AppExchange Listing: 
 https://appexchange.salesforce.com/appxListingDetail?listingId=a0N3A00000FZFTAUA5
 
+Open-Source Code:
+https://github.com/salesforce-experiencecloud/KnowledgeArticleBodyContent
 
 
 ## Description:
