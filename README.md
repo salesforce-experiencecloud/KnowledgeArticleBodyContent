@@ -1,7 +1,8 @@
 # Knowledge Article Body Content for Experience Cloud
 
+**As of:** Winter '22
 
-**Authored By:** George Abboud
+**Authored By:** George Abboud 
 
 **Last Updated:** 02/08/2022
 
