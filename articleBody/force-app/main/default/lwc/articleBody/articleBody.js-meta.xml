@@ -24,9 +24,17 @@
             datasource="apex://articleBodyAPINamePicklist"
             description="Article Body (Rich Text Area / HTML type) Field on Article object" />
 
+            <property name="body1CssClassesInput" type="String" label="Body 1 CSS Classes" required="false"
+            default=""
+            description="Class names for div wrapper containing the body rich text" />
+
             <property name="articleBodyAPIName2" type="String" label="Article Body (Rich Text) Field API Name 2" required="false"
             datasource="apex://articleBodyAPINamePicklist"
             description="Article Body (Rich Text Area / HTML type) Field on Article object 2" />
+
+            <property name="body2CssClassesInput" type="String" label="Body 2 CSS Classes" required="false"
+            default=""
+            description="Class names for div wrapper containing the body 2 rich text" />
 
             <property name="showSecondBodyField" type="Boolean" label="Display Second Body Field" required="false"
             default="false"

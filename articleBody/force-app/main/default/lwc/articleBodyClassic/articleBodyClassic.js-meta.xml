@@ -24,6 +24,14 @@
             default="false"
             description="If checked will display the article's second body field." />
 
+            <property name="body1CssClassesInput" type="String" label="Body 1 CSS Classes" required="false"
+            default=""
+            description="Class names for div wrapper containing the body rich text" />
+
+            <property name="body2CssClassesInput" type="String" label="Body 2 CSS Classes" required="false"
+            default=""
+            description="Class names for div wrapper containing the body 2 rich text" />
+
             <property name="showTitle" type="Boolean" label="Show Title" required="false"
             default="false"
             description="If checked will display the article title." />

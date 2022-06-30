@@ -26,6 +26,8 @@ export default class ArticleBody extends LightningElement {
     @api articleViewsText = '';
     @api showSecondBodyField = false;
     @api showTopics = false;
+    @api body1CssClassesInput = '';
+    @api body2CssClassesInput = '';
 
     @track articleInfo;
     @track error;
@@ -49,6 +51,18 @@ export default class ArticleBody extends LightningElement {
     get showHeaderTemplate()
     {
         return (this.showArticleNumber || this.showArticleViews || this.showTitle);
+    }
+
+    @api
+    get body1CssClasses()
+    {
+        return this.body1CssClassesInput;
+    }
+
+    @api
+    get body2CssClasses()
+    {
+        return 'slds-m-top_medium ' + this.body2CssClassesInput;
     }
 
     //wire functions
