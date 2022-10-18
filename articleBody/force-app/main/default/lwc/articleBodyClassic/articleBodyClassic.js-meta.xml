@@ -20,6 +20,10 @@
             default="{!recordId}"
             description="Record Id value for article" />
 
+            <property name="hideFirstBodyField" type="Boolean" label="Hide First Body Field" required="false"
+            default="false"
+            description="If checked will hide the article's first body field." />
+
             <property name="showSecondBodyField" type="Boolean" label="Display Second Body Field" required="false"
             default="false"
             description="If checked will display the article's second body field." />

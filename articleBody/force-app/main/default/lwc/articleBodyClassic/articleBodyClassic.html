@@ -9,9 +9,12 @@
             </ul>
         </div>
 
-        <div class={body1CssClasses} if:true={articleInfo.body}>
-            <lightning-formatted-rich-text value={articleInfo.body} disable-linkify></lightning-formatted-rich-text>
-        </div>
+        <template if:false={hideFirstBodyField}>
+            <div class={body1CssClasses} if:true={articleInfo.body}>
+                <lightning-formatted-rich-text value={articleInfo.body} disable-linkify></lightning-formatted-rich-text>
+            </div>
+        </template>
+        
         <template if:true={showSecondBodyField}>
             <div if:true={articleInfo.body2} class={body2CssClasses}>
                 <lightning-formatted-rich-text value={articleInfo.body2} disable-linkify></lightning-formatted-rich-text>

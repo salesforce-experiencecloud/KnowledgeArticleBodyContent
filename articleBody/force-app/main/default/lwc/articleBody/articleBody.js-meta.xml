@@ -36,6 +36,10 @@
             default=""
             description="Class names for div wrapper containing the body 2 rich text" />
 
+            <property name="hideFirstBodyField" type="Boolean" label="Hide First Body Field" required="false"
+            default="false"
+            description="If checked will hide the article's first body field." />
+
             <property name="showSecondBodyField" type="Boolean" label="Display Second Body Field" required="false"
             default="false"
             description="If checked will display the article's second body field." />

@@ -24,6 +24,7 @@ export default class ArticleBody extends LightningElement {
     @api showArticleViews = false;
     @api articleViewsStyle = '';
     @api articleViewsText = '';
+    @api hideFirstBodyField = false;
     @api showSecondBodyField = false;
     @api showTopics = false;
     @api body1CssClassesInput = '';
